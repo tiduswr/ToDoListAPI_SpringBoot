@@ -6,7 +6,7 @@ Esta é uma API simples de lista de tarefas (todo list), desenvolvida com o Spri
 Tecnologias Utilizadas
 ----------------------
 
-*   Java 11
+*   Java 17
 *   Spring Boot
 *   H2 Database
 *   Maven
@@ -16,8 +16,6 @@ Como Executar
 -------------
 
 Para executar a API, você pode clonar este repositório em sua máquina local e executar o seguinte comando na raiz do projeto:
-
-bashCopy code
 
 `mvn spring-boot:run`
 
@@ -29,15 +27,11 @@ A API possui os seguintes endpoints:
 
 ### Criação de Tarefas
 
-bashCopy code
-
 `POST /tarefas/list`
 
 Cria uma nova tarefa.
 
 ### Atualização de Tarefas
-
-bashCopy code
 
 `PUT /tarefas/list/{id}`
 
@@ -45,23 +39,17 @@ Atualiza uma tarefa existente.
 
 ### Exclusão de Tarefas
 
-bashCopy code
-
 `DELETE /tarefas/list/{id}`
 
 Exclui uma tarefa existente.
 
 ### Busca de Todas as Tarefas
 
-bashCopy code
-
 `GET /tarefas/list`
 
 Retorna uma lista com todas as tarefas existentes.
 
 ### Busca de Tarefa por ID
-
-bashCopy code
 
 `GET /tarefas/list/{id}`
 
