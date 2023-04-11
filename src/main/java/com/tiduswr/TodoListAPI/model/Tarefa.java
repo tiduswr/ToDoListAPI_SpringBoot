@@ -22,6 +22,19 @@ public class Tarefa extends GenericEntity{
     @JoinColumn(name = "lista_tarefas_id")
     private ListTarefas listTarefas;
 
+    public Tarefa(){}
+
+    public Tarefa(ListTarefas listTarefas){
+        this.listTarefas = listTarefas;
+    }
+
+    public void update(Tarefa t){
+        if(t.getDone() != this.getDone())
+            this.setDone(t.getDone());
+        if(!t.getDescricao().equals(this.getDescricao()))
+            this.setDescricao(t.getDescricao());
+    }
+
     public ListTarefas getListTarefas() {
         return listTarefas;
     }

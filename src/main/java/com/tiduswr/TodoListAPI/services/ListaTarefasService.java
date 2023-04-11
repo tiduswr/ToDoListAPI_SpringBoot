@@ -13,9 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class ListaTarefasService {
@@ -68,20 +69,47 @@ public class ListaTarefasService {
 
     @Transactional(readOnly = false)
     public ListTarefas atualizarTarefa(Long id, ListTarefas listTarefas) throws EntityNotFoundException{
-        ListTarefas bdEntity = buscarPorId(id);
-        bdEntity.setDescricao(listTarefas.getDescricao());
-        bdEntity.setDataLimite(listTarefas.getDataLimite());
+        final ListTarefas bdListTarefas = buscarPorId(id);
+        bdListTarefas.setDescricao(listTarefas.getDescricao());
+        bdListTarefas.setDataLimite(listTarefas.getDataLimite());
 
         List<Tarefa> tarefas = listTarefas.getTarefas();
-        for(Tarefa tarefa : tarefas){
-            if(tarefa.getId() != null){
-                Tarefa bdTarefa = tarefaRepository.findById(tarefa.getId()).orElseThrow(
-                        () -> new EntityNotFoundException("Tarefa de id " + Long.toString(tarefa.getId()) + "não encontrada")
-                );
-                bdTarefa.setDescricao(tarefa.getDescricao());
-                bdTarefa.setDone(tarefa.getDone());
-            }
-        }
-        return listTarefasRepository.save(bdEntity);
+        List<Tarefa> bdTarefas = bdListTarefas.getTarefas();
+        updateTarefas(bdListTarefas, tarefas, bdTarefas);
+
+        return listTarefasRepository.save(bdListTarefas);
     }
+
+    private void updateTarefas(ListTarefas bdListTarefas, List<Tarefa> tarefas, List<Tarefa> bdTarefas){
+        List<Tarefa> bdTarefasExcluidas = bdTarefas
+                .stream()
+                .filter(t -> !tarefas.contains(t))
+                .toList();
+        List<Tarefa> tarefasNovas = tarefas
+                .stream()
+                .filter(t -> !bdTarefas.contains(t))
+                .toList();
+        List<Tarefa> bdTarefasParaUpdate = bdTarefas
+                .stream()
+                .filter(t -> !(bdTarefasExcluidas.contains(t) || tarefasNovas.contains(t)))
+                .toList();
+
+        for(Tarefa tarefa : tarefasNovas){
+            tarefa.setListTarefas(bdListTarefas);
+            bdTarefas.add(tarefa);
+        }
+
+        for(Tarefa tarefa : bdTarefasExcluidas){
+            tarefa.setListTarefas(null);
+            bdTarefas.remove(tarefa);
+        }
+
+        for(Tarefa tarefa : bdTarefasParaUpdate){
+            Optional<Tarefa> tarefaRecebida = tarefas.stream()
+                    .filter(t -> t.equals(tarefa))
+                    .findFirst();
+            tarefaRecebida.ifPresent((t) -> tarefa.update(t));
+        }
+    }
+
 }
