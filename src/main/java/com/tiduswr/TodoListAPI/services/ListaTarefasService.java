@@ -14,9 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class ListaTarefasService {
@@ -81,35 +78,23 @@ public class ListaTarefasService {
     }
 
     private void updateTarefas(ListTarefas bdListTarefas, List<Tarefa> tarefas, List<Tarefa> bdTarefas){
-        List<Tarefa> bdTarefasExcluidas = bdTarefas
-                .stream()
-                .filter(t -> !tarefas.contains(t))
-                .toList();
+        bdTarefas.removeIf(t -> !tarefas.contains(t));
+        bdTarefas.replaceAll(t -> {
+            tarefas.stream()
+                    .filter(tr -> tr.equals(t))
+                    .findFirst()
+                    .ifPresent(tr -> t.update(tr));
+            return t;
+        });
         List<Tarefa> tarefasNovas = tarefas
                 .stream()
                 .filter(t -> !bdTarefas.contains(t))
+                .peek(t -> {
+                    t.setListTarefas(bdListTarefas);
+                    t.setId(null);
+                })
                 .toList();
-        List<Tarefa> bdTarefasParaUpdate = bdTarefas
-                .stream()
-                .filter(t -> !(bdTarefasExcluidas.contains(t) || tarefasNovas.contains(t)))
-                .toList();
-
-        for(Tarefa tarefa : tarefasNovas){
-            tarefa.setListTarefas(bdListTarefas);
-            bdTarefas.add(tarefa);
-        }
-
-        for(Tarefa tarefa : bdTarefasExcluidas){
-            tarefa.setListTarefas(null);
-            bdTarefas.remove(tarefa);
-        }
-
-        for(Tarefa tarefa : bdTarefasParaUpdate){
-            Optional<Tarefa> tarefaRecebida = tarefas.stream()
-                    .filter(t -> t.equals(tarefa))
-                    .findFirst();
-            tarefaRecebida.ifPresent((t) -> tarefa.update(t));
-        }
+        bdTarefas.addAll(tarefasNovas);
     }
 
 }

@@ -18,7 +18,27 @@ Para executar a API, você pode clonar este repositório em sua máquina local e
 
 `mvn spring-boot:run`
 
+Modelo de Dados
+---------------
 
+Para criar uma lista de tarefas você deve definir o objeto com os seguintes campos:
+
+```
+{
+    "descricao": "Lista de ferramentas para comprar",
+    "dataLimite": "2023-04-27",
+    "tarefas": [
+        {
+            "descricao": "Comprar martelo",
+            "done": false
+        },
+        {
+            "descricao": "Comprar maquita",
+            "done": false
+        }
+    ]
+}
+```
 Endpoints
 ---------
 

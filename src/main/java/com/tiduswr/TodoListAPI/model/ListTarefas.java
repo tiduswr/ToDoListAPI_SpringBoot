@@ -25,7 +25,8 @@ public class ListTarefas extends GenericEntity{
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataLimite;
 
-    @NotNull @Valid
+    @NotNull
+    @Valid
     @OneToMany(mappedBy = "listTarefas", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tarefa> tarefas;
 

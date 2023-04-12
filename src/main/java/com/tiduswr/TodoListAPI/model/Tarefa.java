@@ -9,7 +9,8 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "tarefas")
 public class Tarefa extends GenericEntity{
 
-    @NotNull @NotBlank
+    @NotNull
+    @NotBlank
     @Column(name = "descricao", nullable = false, length = 100)
     private String descricao;
 
